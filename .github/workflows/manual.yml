@@ -1,53 +1,38 @@
-name: Runbot Workflow
+name: Git Clone, Unzip, Install, and Run
 
 on:
   push:
     branches:
       - main  # Jalankan setiap ada push di branch 'main'
-  workflow_dispatch:  # Memungkinkan pemicu manual
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Check if last run was less than 5 hours ago
-      id: check_time
-      run: |
-        # Ambil waktu terakhir workflow dijalankan
-        last_run_time=$(date -d "$(git log -1 --format=%cd --date=iso)" +%s)
-        current_time=$(date +%s)
-        time_diff=$((current_time - last_run_time))
-        
-        # Jika selisih waktu kurang dari 5 jam (18000 detik), keluar dengan status 1
-        if [ $time_diff -lt 18000 ]; then
-          echo "Last run was less than 5 hours ago. Exiting."
-          exit 1
-        fi
-
     # Step 1: Clone the target repository
     - name: Clone Runbot repository
       run: |
-        git clone https://github.com/Yudzxml/Runbot.git || (echo "Clone failed, retrying..." && git clone https://github.com/Yudzxml/Runbot.git)
+        git clone https://github.com/Yudzxml/Runbot.git
 
     # Step 2: Navigate into the Runbot directory
     - name: Change directory to Runbot
-      run: cd Runbot || (echo "Failed to change directory, retrying..." && cd Runbot)
+      run: cd Runbot
 
     # Step 3: Unzip x7botz.zip file inside the Runbot folder
     - name: Unzip x7botz.zip
       run: |
-        sudo apt-get install unzip || (echo "Unzip failed, retrying..." && sudo apt-get install unzip)
-        unzip Runbot/x7botz.zip -d ./Runbot || (echo "Unzip failed, retrying..." && unzip Runbot/x7botz.zip -d ./Runbot)
+        sudo apt-get install unzip  # Install unzip tool if not already installed
+        unzip Runbot/x7botz.zip -d ./Runbot # Unzip x7botz.zip in the Runbot directory
 
     # Step 4: Install npm dependencies
     - name: Install npm dependencies
       run: |
-        cd Runbot || (echo "Failed to change directory, retrying..." && cd Runbot)
-        npm install || (echo "npm install failed, retrying..." && npm install)
+        cd Runbot
+        npm install
 
     # Step 5: Start the npm application
     - name: Start the application
       run: |
-        cd Runbot || (echo "Failed to change directory, retrying..." && cd Runbot)
-        npm start || (echo "npm start failed, retrying..." && npm start)
+        cd Runbot
+        npm start
