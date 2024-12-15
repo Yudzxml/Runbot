@@ -1,9 +1,10 @@
-name: Git Clone, Unzip, Install, and Run
+name: Runbot Workflow
 
 on:
   push:
     branches:
       - main  # Jalankan setiap ada push di branch 'main'
+  workflow_dispatch:  # Memungkinkan pemicu manual
 
 jobs:
   build:
